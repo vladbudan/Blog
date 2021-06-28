@@ -8,7 +8,5 @@ import java.util.List;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag, Integer> {
-    Tag findByTagName(String name);
-
-    List<Tag> findTagCloud();
+    List<Tag> findAllByName(String name);
 }

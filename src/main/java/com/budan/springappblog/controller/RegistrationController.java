@@ -15,7 +15,6 @@ import java.io.IOException;
 public class RegistrationController {
 
     private final UserService userService;
-    private final DtoUserConverter dtoUserConverter;
 
     @PostMapping("/registration")
     public User register(@RequestBody UserDto user) {

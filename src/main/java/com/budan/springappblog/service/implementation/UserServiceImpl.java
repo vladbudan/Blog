@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
     private void sendMessageRegistration(User user, String code) {
         String message = String.format(
                 "Hello, %s! \n" +
-                        "Welcome to blog. Please, visit next link: http://localhost:9090/api/registration/activate/%s",
+                        "Welcome to blog. Please, visit next link: http://localhost:8080/api/registration/activate/%s",
                 user.getFirstName(),
                 code);
 
@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService {
     private void sendMessageNewPassword(User user, String activateCode) {
         String message = String.format(
                 "Hello, %s! \n" +
-                        "Welcome to blog. Please, visit next link: http://localhost:9090/api/auth/reset/%s",
+                        "Welcome to blog. Please, visit next link: http://localhost:8080/api/auth/reset/%s",
                 user.getFirstName(),
                 activateCode);
 
