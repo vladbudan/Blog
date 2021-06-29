@@ -1,9 +1,8 @@
 package com.budan.springappblog.controller;
 
+import com.budan.springappblog.dto.status.DtoRequestStatus;
 import com.budan.springappblog.dto.user.UserDto;
-import com.budan.springappblog.model.User;
 import com.budan.springappblog.service.UserService;
-import com.budan.springappblog.service.dtoConverters.DtoUserConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +16,7 @@ public class RegistrationController {
     private final UserService userService;
 
     @PostMapping("/registration")
-    public User register(@RequestBody UserDto user) {
+    public DtoRequestStatus register(@RequestBody UserDto user) {
         return userService.registerUser(user);
     }
 

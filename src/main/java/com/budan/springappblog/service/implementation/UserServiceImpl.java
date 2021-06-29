@@ -1,10 +1,14 @@
 package com.budan.springappblog.service.implementation;
 
+import com.budan.springappblog.constants.Abbreviation;
+import com.budan.springappblog.dto.status.DtoRequestStatus;
 import com.budan.springappblog.dto.user.UserDto;
 import com.budan.springappblog.model.ActivateCode;
+import com.budan.springappblog.model.Role;
 import com.budan.springappblog.model.User;
 import com.budan.springappblog.model.UserStatus;
 import com.budan.springappblog.repository.ActivateCodeRepository;
+import com.budan.springappblog.repository.RoleRepository;
 import com.budan.springappblog.repository.UserRepository;
 import com.budan.springappblog.service.MailService;
 import com.budan.springappblog.service.UserService;
@@ -24,6 +28,7 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final DtoUserConverter dtoUserConverter;
     private final BCryptPasswordEncoder passwordEncoder;
     private final ActivateCodeRepository activateCodeRepository;
@@ -31,25 +36,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByFirstname(String firstName) {
-        return userRepository.findByFirstname(firstName);
+        User user = userRepository.findByFirstname(firstName);
+        return user;
     }
 
     @Override
-    public User registerUser(UserDto userDto) {
+    public DtoRequestStatus registerUser(UserDto userDto) {
         User user = dtoUserConverter.fromAddToModel(userDto);
         User existUser = userRepository.findByFirstname(user.getFirstName());
         if (existUser == user) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "User is exist");
+            return new DtoRequestStatus(Abbreviation.ERROR, Abbreviation.ERROR_THAT_USER_ALREADY_EXIST);
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setStatus(UserStatus.NOT_ACTIVE.NOT_ACTIVE);
-        user.setCreated(new Date());
-        user.setUpdated(new Date());
+        setDefualtSettings(user);
+        userRepository.save(user);
         ActivateCode activateCode = setActivateCode(user);
         sendMessageRegistration(user, activateCode.getActivateCode());
 
-        return userRepository.save(user);
+        return new DtoRequestStatus(Abbreviation.ERROR, Abbreviation.SUCCESS_REGISTRATION);
     }
 
     @Override
@@ -66,13 +69,13 @@ public class UserServiceImpl implements UserService {
             activateCode.setActivateCode(null);
             activateCode.setActivate(false);
             User user = userRepository.findByFirstname(activateCode.getUsername());
-            user.setStatus(UserStatus.ACTIVE.ACTIVE);
+            user.setStatus(UserStatus.ACTIVE);
             activateCodeRepository.save(activateCode);
             userRepository.save(user);
 
         } catch (IllegalArgumentException ex) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Access denied, user already activated or not registered", ex);
+                    HttpStatus.NOT_FOUND, Abbreviation.ERROR_THAT_USER_EXIST_OR_REGISTERED, ex);
         }
     }
 
@@ -117,7 +120,7 @@ public class UserServiceImpl implements UserService {
 
         } catch (IllegalArgumentException ex) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Access denied, user already activated or not registered", ex);
+                    HttpStatus.NOT_FOUND, Abbreviation.SUBJECT_REMEMBER_PASSWORD, ex);
         }
         return userDto;
     }
@@ -155,11 +158,20 @@ public class UserServiceImpl implements UserService {
         mailService.send(user.getEmail(), "Activation Code", message);
     }
 
-    public boolean uniqueUsername(String username) {
-        return userRepository.findByFirstname(username) == null;
+    @Override
+    public boolean userIsEnabled(String firstName) {
+        return userRepository.findByFirstname(firstName).getIsEnabled();
     }
 
-    public boolean userIsEnabled(String username) {
-        return userRepository.findByFirstname(username).getIsEnabled();
+    private void setDefualtSettings(User user) {
+        Role userRole = roleRepository.findByName(USER_ROLE);
+        Set<Role> roleUser = new HashSet<>();
+        roleUser.add(userRole);
+
+        user.setRoles(userRole);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setStatus(UserStatus.ACTIVE);
+        user.setCreated(new Date());
+        user.setUpdated(new Date());
     }
 }

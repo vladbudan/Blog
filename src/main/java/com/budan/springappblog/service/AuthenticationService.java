@@ -1,8 +1,8 @@
 package com.budan.springappblog.service;
 
-import com.budan.springappblog.dto.login.LoginRequestDto;
-import com.budan.springappblog.dto.login.LoginResponseDto;
+import com.budan.springappblog.dto.login.DtoLoginRequest;
+import com.budan.springappblog.dto.login.DtoLoginResponse;
 
 public interface AuthenticationService {
-    LoginResponseDto login(final LoginRequestDto loginRequestDto);
+    DtoLoginResponse login(final DtoLoginRequest dtoLoginRequest);
 }

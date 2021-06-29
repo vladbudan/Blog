@@ -22,7 +22,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     public JwtAuthenticationFilter(final AuthenticationManager authenticationManager) {
         super(request -> true);
-        setAuthenticationManager(authenticationManager);
+        setAuthenticationManager(authenticationManager);    
         setAuthenticationFailureHandler(new RestAuthenticationFailureHandler());
     }
 

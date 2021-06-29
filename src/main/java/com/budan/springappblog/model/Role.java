@@ -22,7 +22,4 @@ public class Role {
     @ManyToMany(mappedBy = "role")
     private Set<User> users;
 
-    public Role() {
-
-    }
 }

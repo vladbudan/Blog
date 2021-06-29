@@ -7,7 +7,7 @@ import com.budan.springappblog.security.exception.ExpiredTokenAuthenticationExce
 import com.budan.springappblog.security.exception.InvalidTokenAuthenticationException;
 import com.budan.springappblog.security.model.JwtAuthenticationToken;
 import com.budan.springappblog.security.model.JwtUserDetails;
-import com.budan.springappblog.security.model.TokenPayLoad;
+import com.budan.springappblog.security.model.Token;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -28,13 +28,13 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(final Authentication authRequest) throws AuthenticationException {
-        String token = StringUtils.trimToNull((String) authRequest.getCredentials());
+        String token = StringUtils.strip((String) authRequest.getCredentials());
 
-        TokenPayLoad tokenPayLoad = authenticationHelper.decodeToken(token);
+        Token tokenLoad = authenticationHelper.decodeToken(token);
 
-        checkIsExpired(tokenPayLoad.getExp());
+        checkIsExpired(tokenLoad.getExp());
 
-        Long userEntityId = tokenPayLoad.getUserId();
+        Integer userEntityId = tokenLoad.getUserId();
         if(Objects.isNull(userEntityId)) {
             throw new InvalidTokenAuthenticationException("Token doesn't contain a user id");
         }

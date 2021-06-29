@@ -13,7 +13,7 @@ import java.util.Set;
 @Getter
 public class JwtUserDetails implements UserDetails {
 
-    private final Long id;
+    private final Integer id;
     private final String firstName;
     private final String lastName;
     private final String password;
@@ -29,7 +29,7 @@ public class JwtUserDetails implements UserDetails {
         this.email = user.getEmail();
         this.isEnabled = user.getIsEnabled();
         this.authorities = new HashSet<>();
-        this.authorities.add(new SimpleGrantedAuthority(user.getRoles().name));
+        this.authorities.add(new SimpleGrantedAuthority(user.getRoles()));
     }
 
     @Override

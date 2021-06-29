@@ -56,7 +56,7 @@ public class ArticleServiceImpl implements ArticleService {
         if (user.isEmpty()) {
             throw new ResourceNotFoundException(Abbreviation.ERROR_THAT_USER_NOT_EXIST);
         }
-        return dtoArticleConverter.fromListToListShow(articleRepository.findAllByUser(user.get()));
+        return dtoArticleConverter.fromListModelToListShow(articleRepository.findAllByUser(user.get()));
     }
 
     @Override
@@ -72,7 +72,7 @@ public class ArticleServiceImpl implements ArticleService {
     public List<DtoShowArticle> getAllByCurrentUser() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return dtoArticleConverter.fromListToListShow(articleRepository.findAllByUser(user));
+        return dtoArticleConverter.fromListModelToListShow(articleRepository.findAllByUser(user));
     }
 
     private void exceptionOnNull(Optional<Article> article) {

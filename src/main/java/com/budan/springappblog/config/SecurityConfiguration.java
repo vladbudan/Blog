@@ -23,7 +23,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final String[] ignoringUrls = new String[] {

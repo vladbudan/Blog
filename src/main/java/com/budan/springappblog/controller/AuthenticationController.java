@@ -1,7 +1,7 @@
 package com.budan.springappblog.controller;
 
-import com.budan.springappblog.dto.login.LoginRequestDto;
-import com.budan.springappblog.dto.login.LoginResponseDto;
+import com.budan.springappblog.dto.login.DtoLoginRequest;
+import com.budan.springappblog.dto.login.DtoLoginResponse;
 import com.budan.springappblog.dto.user.UserDto;
 import com.budan.springappblog.service.AuthenticationService;
 import com.budan.springappblog.service.UserService;
@@ -22,8 +22,8 @@ public class AuthenticationController {
     private final DtoUserConverter dtoUserConverter;
 
     @PostMapping("/login")
-    public LoginResponseDto authentication(@RequestBody LoginRequestDto loginRequestDto) {
-        return authenticationService.login(loginRequestDto);
+    public DtoLoginResponse authentication(@RequestBody DtoLoginRequest dtoLoginRequest) {
+        return authenticationService.login(dtoLoginRequest);
     }
 
     @PostMapping("/forgot_pass}")

@@ -10,7 +10,9 @@ import java.util.Optional;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Integer> {
-    Article findByArticleId(Integer id);
+    Optional<Article> findById(Integer id);
+
+    List<Article> findByListArticleId(Integer id);
 
     List<Article> findAllByUser(User user);
 }

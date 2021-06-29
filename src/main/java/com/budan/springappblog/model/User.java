@@ -12,7 +12,7 @@ import java.util.Set;
 @Table(name = "user")
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 public class User extends BaseEntity{
 
     @Id
@@ -44,10 +44,7 @@ public class User extends BaseEntity{
     @OneToMany(mappedBy = "article")
     private Set<Article> articles;
 
-    public User() {}
+    @OneToMany(mappedBy = "user")
+    private Set<Comment> comments;
 
-    public User(Integer id, String firstName) {
-        this.id = id;
-        this.firstName = firstName;
-    }
 }

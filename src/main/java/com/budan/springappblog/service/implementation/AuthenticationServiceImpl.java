@@ -1,9 +1,9 @@
 package com.budan.springappblog.service.implementation;
 
 import com.budan.springappblog.constants.Abbreviation;
-import com.budan.springappblog.dto.login.LoginRequestDto;
-import com.budan.springappblog.dto.login.LoginResponseDto;
-import com.budan.springappblog.dto.status.RequestStatusDto;
+import com.budan.springappblog.dto.login.DtoLoginRequest;
+import com.budan.springappblog.dto.login.DtoLoginResponse;
+import com.budan.springappblog.dto.status.DtoRequestStatus;
 import com.budan.springappblog.model.User;
 import com.budan.springappblog.repository.UserRepository;
 import com.budan.springappblog.security.model.JwtUserDetails;
@@ -31,20 +31,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationHelper authenticationHelper;
 
     @Override
-    public LoginResponseDto login(final LoginRequestDto loginRequestDto) {
+    public DtoLoginResponse login(final DtoLoginRequest dtoLoginRequest) {
         try {
-            String username = ofNullable(loginRequestDto.getUsername())
+            String username = ofNullable(dtoLoginRequest.getUsername())
                     .orElseThrow(() -> new BadCredentialsException(Abbreviation.BAD_CREDENTIALS_USER_PASSED));
-            String password = ofNullable(loginRequestDto.getPassword())
+            String password = ofNullable(dtoLoginRequest.getPassword())
                     .orElseThrow(() -> new BadCredentialsException(Abbreviation.BAD_CREDENTIALS_PASS_PASSED));
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username,
                     password);
-            if (userService.uniqueUsername(username)) {
-                return new LoginResponseDto(null, new RequestStatusDto(Abbreviation.ERROR, Abbreviation.ERROR_UNIQUE_USERNAME),
-                        null);
-            }
-            if (!this.userService.userIsEnabled(loginRequestDto.getUsername())) {
-                return new LoginResponseDto(null, new RequestStatusDto(Abbreviation.ERROR, Abbreviation.ERROR_USER_NOT_ENABLED),
+            if (!this.userService.userIsEnabled(dtoLoginRequest.getUsername())) {
+                return new DtoLoginResponse(null, new DtoRequestStatus(Abbreviation.ERROR, Abbreviation.ERROR_USER_NOT_ENABLED),
                         null);
             }
             final Authentication authResult = this.authenticationManager.authenticate(authRequest);
@@ -52,14 +48,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 JwtUserDetails userDetails = (JwtUserDetails) authResult.getPrincipal();
                 User user = userRepository.findById(userDetails.getId()).get();
                 String token = this.authenticationHelper.generateToken(userDetails.getId());
-                return new LoginResponseDto(token,
-                        new RequestStatusDto(Abbreviation.SUCCESS, Abbreviation.SUCCESS_AUTHENTICATION),
+                return new DtoLoginResponse(token,
+                        new DtoRequestStatus(Abbreviation.SUCCESS, Abbreviation.SUCCESS_AUTHENTICATION),
                         user);
             } else {
                 throw new JsonException(Abbreviation.AUTH_FILED);
             }
         } catch (BadCredentialsException exception) {
-            return new LoginResponseDto(null, new RequestStatusDto(Abbreviation.ERROR, Abbreviation.ERROR_INVALID_PARAMETRS),
+            return new DtoLoginResponse(null, new DtoRequestStatus(Abbreviation.ERROR, Abbreviation.ERROR_INVALID_PARAMETERS),
                     null);
         }
     }

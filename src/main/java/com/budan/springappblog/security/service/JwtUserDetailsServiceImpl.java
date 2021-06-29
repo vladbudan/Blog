@@ -20,9 +20,9 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String firstName) throws UsernameNotFoundException {
-        User byFirstName = this.userRepository.findByFirstname(firstName);
+        User user = this.userRepository.findByFirstname(firstName);
 
-        return Optional.ofNullable(byFirstName)
+        return Optional.ofNullable(user)
                 .map(JwtUserDetails::new)
                 .orElseThrow(() -> new JsonException("User not found"));
     }

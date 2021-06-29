@@ -1,7 +1,7 @@
 package com.budan.springappblog.security.service;
 
 import com.budan.springappblog.security.exception.InvalidTokenAuthenticationException;
-import com.budan.springappblog.security.model.TokenPayLoad;
+import com.budan.springappblog.security.model.Token;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,23 +24,23 @@ public class AuthenticationHelper {
     private final String SECRET_KEY = "SecretKey";
     private final ObjectMapper objectMapper;
 
-    private Long tokenExpirationTime = 36000000L;
+    private Long tokenExpirationTime = 36000000L; // one hour
 
-    public String generateToken(final Long userId) {
+    public String generateToken(final Integer userId) {
         try {
-            TokenPayLoad payLoad = new TokenPayLoad(
+            Token tokenLoad = new Token(
                     userId,
                     Instant.now().getEpochSecond() + this.tokenExpirationTime
             );
 
-            String token = this.objectMapper.writeValueAsString(payLoad);
+            String token = this.objectMapper.writeValueAsString(tokenLoad);
             return JwtHelper.encode(token, new MacSigner(SECRET_KEY)).getEncoded();
         } catch(JsonProcessingException exception) {
             throw new InternalAuthenticationServiceException("Error generating token", exception);
         }
     }
 
-    public TokenPayLoad decodeToken(final String token) {
+    public Token decodeToken(final String token) {
         if(Objects.isNull(token)) {
             throw new InvalidTokenAuthenticationException("Token was null or blank");
         }
@@ -54,9 +54,9 @@ public class AuthenticationHelper {
         }
 
         String claims = jwt.getClaims();
-        TokenPayLoad tokenPayLoad;
+        Token tokenPayLoad;
         try {
-            tokenPayLoad = this.objectMapper.readValue(claims, TokenPayLoad.class);
+            tokenPayLoad = this.objectMapper.readValue(claims, Token.class);
         } catch (IOException exception) {
             throw new InvalidTokenAuthenticationException("Token parsing failed ", exception);
         }

@@ -4,10 +4,10 @@ import com.budan.springappblog.dto.article.DtoAddArticle;
 import com.budan.springappblog.dto.article.DtoEditArticle;
 import com.budan.springappblog.dto.article.DtoShowArticle;
 import com.budan.springappblog.model.Article;
-import com.budan.springappblog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DtoArticleConverter {
 
-    private final UserRepository userRepository;
 
     public Article fromAddToModel(final DtoAddArticle dtoAddArticle) {
         Article article = new Article();
@@ -27,12 +26,12 @@ public class DtoArticleConverter {
         return article;
     }
 
-    public Article mergeEditAndModel(final Article article, final DtoEditArticle dtoEditArticle) {
+    public Article mergeEditAndModel(final Article article, DtoEditArticle dtoEditArticle) {
 
-        article.setId(dtoEditArticle.getId());
+        article.setStatus(dtoEditArticle.getStatus());
         article.setTitle(dtoEditArticle.getTitle());
         article.setText(dtoEditArticle.getText());
-        article.setStatus(dtoEditArticle.getStatus());
+        article.setUpdatedAt(LocalDate.now());
 
         return article;
     }
@@ -40,17 +39,14 @@ public class DtoArticleConverter {
     public DtoShowArticle fromModelToShow(final Article article) {
         DtoShowArticle dtoShowArticle = new DtoShowArticle();
 
-        dtoShowArticle.setId(article.getId());
         dtoShowArticle.setTitle(article.getTitle());
         dtoShowArticle.setText(article.getText());
         dtoShowArticle.setStatus(article.getStatus().name());
-        dtoShowArticle.setAuthor(article.getAuthor().getFirstName());
-        dtoShowArticle.setUpdatedAt(article.getUpdatedAt().toString());
 
         return dtoShowArticle;
     }
 
-    public List<DtoShowArticle> fromListToListShow(final List<Article> articleList) {
+    public List<DtoShowArticle> fromListModelToListShow(final List<Article> articleList) {
         List<DtoShowArticle> dtoShowArticleList = new ArrayList<>(articleList.size());
 
         for(Article article: articleList) {
